@@ -24,39 +24,42 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException
-    {
-        String[] credentials = parseUsernameAndPassword(request, "Authorization");
-        String userName = credentials[0];
-        String password = credentials[1];
+            FilterChain filterChain) throws ServletException, IOException {
 
-        if (isCrendentialsValid(userName, password)) {
-            filterChain.doFilter(request, response);
-        } else {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Credenciais inválidas");
+        if (request.getServletPath() != "/users/create") {
+            String[] credentials = parseUsernameAndPassword(request, "Authorization");
+            String userName = credentials[0];
+            String password = credentials[1];
+
+            if (isCrendentialsValid(userName, password)) {
+                filterChain.doFilter(request, response);
+            } else {
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Credenciais inválidas");
+            }
         }
+
     }
 
-    private String[] parseUsernameAndPassword(HttpServletRequest request, String authKey){
+    private String[] parseUsernameAndPassword(HttpServletRequest request, String authKey) {
         String authEncoded = request
                 .getHeader(authKey)
                 .substring("Basic".length()).trim();
         String authDecodedString = new String(Base64.getDecoder().decode(authEncoded));
         String[] credentials = authDecodedString.split(":");
 
-        return  credentials;
+        return credentials;
     }
 
-    private boolean isCrendentialsValid(String userName, String password )
+    private boolean isCrendentialsValid(String userName, String password)
             throws IOException {
         // Validacao de userName
         UserModel user = repository.findByuserName(userName);
-        if(user == null) return false;
+        if (user == null) return false;
         //Validacao de senha
         BCrypt.Result passwordVerify = BCrypt.verifyer().verify(
                 password.toCharArray(), user.getPassword().toCharArray()
         );
-        if(!passwordVerify.verified) return false;
+        if (!passwordVerify.verified) return false;
 
 
         return true;

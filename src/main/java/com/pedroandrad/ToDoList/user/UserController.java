@@ -16,7 +16,7 @@ public class UserController {
     @Autowired
     private IUserRepository repository;
 
-    @PostMapping()
+    @PostMapping("/create")
     public ResponseEntity createUser(@RequestBody UserModel user) {
         try {
             UserModel createdUser = this.repository.save(this.hashUser(user));
