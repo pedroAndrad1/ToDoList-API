@@ -26,12 +26,15 @@ public class AuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        if (!request.getServletPath().equals("/users/create")) {
+        if (!request.getServletPath().equals("/users/create") &&
+                !request.getServletPath().equals("/h2-console")
+        ) {
             String[] credentials = parseUsernameAndPassword(request, "Authorization");
             String userName = credentials[0];
             String password = credentials[1];
 
             if (isCrendentialsValid(userName, password)) {
+                request.setAttribute("userName", userName);
                 filterChain.doFilter(request, response);
             } else {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Credenciais inválidas");
