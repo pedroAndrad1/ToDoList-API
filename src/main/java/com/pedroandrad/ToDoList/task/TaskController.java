@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,13 +25,13 @@ public class TaskController {
     ITaskMapper taskMapper;
 
     @PostMapping("/create")
-    public ResponseEntity createTask(@RequestBody TaskDto taskDto,
-                                                                   HttpServletRequest request) {
+    public ResponseEntity createTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
+        if(!isDatesValids(taskDto)){
+            throw new HttpMessageNotReadableException(
+                    "A data final não pode ser anterior a data de hoje ou a data inicial"
+            );
+        }
         try {
-            if(!isDatesValids(taskDto)){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("A data final não pode ser anterior a data de hoje ou a data inicial");
-            }
             TaskModel task = taskMapper.updateTaskFromDTO(taskDto, new TaskModel());
             UserModel user = userRepository.findByuserName(request.getAttribute("userName").toString());
             task.setUser(user);

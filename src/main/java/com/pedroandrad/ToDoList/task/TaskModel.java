@@ -4,6 +4,7 @@ import com.pedroandrad.ToDoList.user.UserModel;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,4 +28,11 @@ public class TaskModel {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void setTitle(String title) throws HttpMessageNotReadableException{
+       if( title.length() > 50)
+           throw new HttpMessageNotReadableException("O title deve ter no máximo 50 caracteres");
+
+       this.title = title;
+    }
 }
