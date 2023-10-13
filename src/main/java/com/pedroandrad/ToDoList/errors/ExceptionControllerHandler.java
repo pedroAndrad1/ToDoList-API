@@ -12,4 +12,10 @@ public class ExceptionControllerHandler {
     public ResponseEntity handleHttpMessageNotReadbleException(HttpMessageNotReadableException e){
         return ResponseEntity.badRequest().body(e.getMostSpecificCause().getMessage());
     }
+
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity handleSecurityException(SecurityException e){
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }

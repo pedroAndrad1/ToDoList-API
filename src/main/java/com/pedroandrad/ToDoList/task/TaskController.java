@@ -69,20 +69,30 @@ public class TaskController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<TaskModel> updateTask(
-            @RequestBody
-            TaskDto taskDto,
-            @PathVariable UUID id
+            @RequestBody TaskDto taskDto,
+            @PathVariable UUID id,
+            HttpServletRequest request
     ) {
-        try {
-            Optional<TaskModel> taskToUpdate = taskRepository.findById(id);
-            if (!taskToUpdate.isPresent()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Optional<TaskModel> taskToUpdate = taskRepository.findById(id);
+        if (!taskToUpdate.isPresent()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(!compareUserNames(
+                taskToUpdate.get().getUser().getUserName(),
+                request.getAttribute("userName").toString()))
+        {
+            throw new SecurityException("Esta task não pertence a esse usuário");
+        }
 
-            TaskModel updatedTask = taskMapper.updateTaskFromDTO(taskDto, taskToUpdate.get());
+        TaskModel updatedTask = taskMapper.updateTaskFromDTO(taskDto, taskToUpdate.get());
+        try {
             TaskModel savedTask = taskRepository.save(updatedTask);
             return ResponseEntity.status(HttpStatus.OK).body(savedTask);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private boolean compareUserNames(String userName1, String userName2){
+        return userName1.equals(userName2);
     }
 
 }
