@@ -16,11 +16,11 @@ public class TaskModel {
     private UUID id;
 
     @Column(length = 50)
-    String title;
-    String description;
-    LocalDateTime startsAt;
-    LocalDateTime endAt;
-    String priority;
+    private String title;
+    private String description;
+    private LocalDateTime startsAt;
+    private LocalDateTime endAt;
+    private String priority;
 
     @ManyToOne()
     UserModel user;

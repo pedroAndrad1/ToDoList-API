@@ -39,6 +39,7 @@ public class AuthFilter extends OncePerRequestFilter {
             } else {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Credenciais inválidas");
             }
+            return;
         }
 
         filterChain.doFilter(request, response);
