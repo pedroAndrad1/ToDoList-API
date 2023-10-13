@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,8 +24,13 @@ public class TaskController {
     ITaskMapper taskMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<TaskModel> createTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
+    public ResponseEntity createTask(@RequestBody TaskDto taskDto,
+                                                                   HttpServletRequest request) {
         try {
+            if(!isDatesValids(taskDto)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("A data final não pode ser anterior a data de hoje ou a data inicial");
+            }
             TaskModel task = taskMapper.updateTaskFromDTO(taskDto, new TaskModel());
             UserModel user = userRepository.findByuserName(request.getAttribute("userName").toString());
             task.setUser(user);
@@ -34,6 +40,13 @@ public class TaskController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private boolean isDatesValids(TaskDto taskDto){
+        if(taskDto.getEndAt().isBefore(LocalDateTime.now())) return false;
+        if(taskDto.getEndAt().isBefore(taskDto.getStartsAt())) return false;
+
+        return  true;
     }
 
     @GetMapping

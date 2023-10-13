@@ -72,7 +72,10 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<!--Plugin para fazer o org.mapstruct funcionar-->
+			<!--
+				Plugin para fazer o org.mapstruct funcionar
+				https://stackoverflow.com/questions/47109827/mapstruct-mapper-annotation-dont-create-bean
+			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
